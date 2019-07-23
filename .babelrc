@@ -1,5 +1,4 @@
 {
-  "ignore": [
-    "./src/renderer/template/dist"
-  ]
+  "ignore": ["./src/renderer/template/dist"],
+  "plugins": ["@babel/plugin-proposal-class-properties"]
 }
