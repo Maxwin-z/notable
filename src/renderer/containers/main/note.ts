@@ -888,7 +888,7 @@ class Note extends Container<NoteState, MainCTX> {
     const shell = `
     cd ${notesPath.replace(/ /g, "\\ ")}
     cd ../
-    sh ./sync.sh
+    nohup sh ./sync.sh & 
     `;
     console.log(shell);
     return new Promise(rs => {
