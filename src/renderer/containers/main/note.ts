@@ -884,7 +884,7 @@ class Note extends Container<NoteState, MainCTX> {
     this.syncEnd = end;
   };
 
-  sync = () => {
+  sync = (force: boolean = false) => {
     console.log("do sync");
     if (this.syncing) {
       console.log("syncing wait");
@@ -924,35 +924,22 @@ class Note extends Container<NoteState, MainCTX> {
     echo $newfiles
     git add .
     git commit -am "A: $newfiles"
-
+    ${
+      force
+        ? `
+    git pull
+    git add .
+    git commit -am "FORCE MERGE"
+    `
+        : ""
+    }
     git push
-
     `
       .split("\n")
       .forEach(cmd => {
         shell.stdin.write(cmd + " \n");
       });
     shell.stdin.end();
-    /*
-    const shell = `
-    cd ${notesPath.replace(/ /g, "\\ ")}
-    cd ../
-    nohup sh ./sync.sh & 
-    `;
-    console.log(shell);
-    return new Promise(rs => {
-      process.exec(shell, (error, stdout, stderr) => {
-        if (error) {
-          console.error(stderr);
-        } else {
-          console.log(stdout);
-        }
-        this.syncing = false;
-        rs();
-        this.syncEnd && this.syncEnd();
-      });
-    });
-    */
   };
 }
 

@@ -26,7 +26,7 @@ class GitButton extends Component<{ sync: Function; listener: Function }> {
     this.props.listener(this.beginSync, this.endSync);
   }
   doSync = async () => {
-    await this.props.sync();
+    await this.props.sync(true);
   };
   render() {
     return (
