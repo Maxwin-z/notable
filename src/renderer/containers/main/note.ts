@@ -930,10 +930,10 @@ class Note extends Container<NoteState, MainCTX> {
     git pull
     git add .
     git commit -am "FORCE MERGE"
+    git push
     `
         : ""
     }
-    git push
     `
       .split("\n")
       .forEach(cmd => {
