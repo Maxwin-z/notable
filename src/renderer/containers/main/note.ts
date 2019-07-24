@@ -36,12 +36,12 @@ class Note extends Container<NoteState, MainCTX> {
     note: undefined as NoteObj | undefined
   };
   syncing: boolean = false;
-
+  syncBegin?: Function;
+  syncEnd?: Function;
   /* CONSTRUCTOR */
 
   constructor() {
     super();
-
     autosuspend(this);
   }
 
@@ -696,6 +696,7 @@ class Note extends Container<NoteState, MainCTX> {
     }
 
     await File.write(note.filePath, note.content);
+    await this.sync();
   };
 
   reveal = (note: NoteObj | undefined = this.state.note) => {
@@ -877,14 +878,62 @@ class Note extends Container<NoteState, MainCTX> {
     return this.set(noteNext); //TODO: Maybe this call should `clearSelection`
   };
 
+  listener = (begin: Function, end?: Function) => {
+    console.log("assign listener");
+    this.syncBegin = begin;
+    this.syncEnd = end;
+  };
+
   sync = () => {
     console.log("do sync");
     if (this.syncing) {
       console.log("syncing wait");
+      return;
     }
     this.syncing = true;
+    this.syncBegin && this.syncBegin();
     const { path: notesPath } = Config.notes;
     if (!notesPath) return;
+    const shell = process.spawn("bash");
+    shell.on("error", e => {
+      console.error("shell:", e);
+    });
+    shell.stdout.on("data", data => {
+      console.log(data.toString());
+    });
+    shell.stderr.on("data", data => {
+      console.log(data.toString());
+    });
+    shell.on("close", code => {
+      console.log("close with code:", code);
+      this.syncEnd && this.syncEnd();
+      this.syncing = false;
+    });
+    `
+    cd ${notesPath.replace(/ /g, "\\ ")}
+    cd ../
+
+    diffs=$(git ls-files --modified -z)
+    dels=$(git ls-files --deleted -z)
+    echo $diffs
+    echo $dels
+    # commit 
+    git commit -am "M: $diffs; D: $dels"
+
+    newfiles=$(git ls-files -z -o --exclude-standard)
+    echo $newfiles
+    git add .
+    git commit -am "A: $newfiles"
+
+    git push
+
+    `
+      .split("\n")
+      .forEach(cmd => {
+        shell.stdin.write(cmd + " \n");
+      });
+    shell.stdin.end();
+    /*
     const shell = `
     cd ${notesPath.replace(/ /g, "\\ ")}
     cd ../
@@ -900,8 +949,10 @@ class Note extends Container<NoteState, MainCTX> {
         }
         this.syncing = false;
         rs();
+        this.syncEnd && this.syncEnd();
       });
     });
+    */
   };
 }
 

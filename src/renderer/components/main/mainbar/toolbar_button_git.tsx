@@ -7,18 +7,26 @@ import { Component } from "react";
 
 /* TOOLBAR BUTTON TRASH */
 
-class GitButton extends Component {
+class GitButton extends Component<{ sync: Function; listener: Function }> {
   state = {
     title: "Git"
   };
-  doSync = async () => {
+  beginSync = () => {
+    console.log("begin sync");
     this.setState({
       title: "Sync..."
     });
-    await this.props.sync();
+  };
+  endSync = () => {
     this.setState({
       title: "Git"
     });
+  };
+  componentDidMount() {
+    this.props.listener(this.beginSync, this.endSync);
+  }
+  doSync = async () => {
+    await this.props.sync();
   };
   render() {
     return (
@@ -38,6 +46,7 @@ class GitButton extends Component {
 export default connect({
   container: Main,
   selector: ({ container }) => ({
-    sync: container.note.sync
+    sync: container.note.sync,
+    listener: container.note.listener
   })
 })(GitButton);
