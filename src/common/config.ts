@@ -1,52 +1,52 @@
-
 /* IMPORT */
 
-import * as path from 'path';
-import Settings from './settings';
+import * as path from "path";
+import Settings from "./settings";
 
 /* CONFIG */
 
 const Config = {
-  autoupdate: true,
-  get cwd () {
-    return Settings.get ( 'cwd' );
+  autoupdate: false,
+  get cwd() {
+    return Settings.get("cwd");
   },
   attachments: {
-    get path () {
+    get path() {
       const cwd = Config.cwd;
-      return cwd ? path.join ( cwd, 'attachments' ) : undefined;
+      return cwd ? path.join(cwd, "attachments") : undefined;
     },
-    glob: '**/*',
+    glob: "**/*",
     re: /^(?!.*(?:\._.*|\.cache|\.DS_Store|Thumbs\.db)$)/,
-    token: '@attachment' // Usable in urls
+    token: "@attachment" // Usable in urls
   },
   notes: {
-    get path () {
+    get path() {
       const cwd = Config.cwd;
-      return cwd ? path.join ( cwd, 'notes' ) : undefined;
+      return cwd ? path.join(cwd, "notes") : undefined;
     },
-    glob: '**/*.{md,mkd,mdwn,mdown,markdown,markdn,mdtxt,mdtext,txt}',
+    glob: "**/*.{md,mkd,mdwn,mdown,markdown,markdn,mdtxt,mdtext,txt}",
     re: /\.(?:md|mkd|mdwn|mdown|markdown|markdn|mdtxt|mdtext|txt)$/,
-    ext: '.md',
-    token: '@note' // Usable in urls
+    ext: ".md",
+    token: "@note" // Usable in urls
   },
   tags: {
-    token: '@tag' // Usable in urls
+    token: "@tag" // Usable in urls
   },
   search: {
-    token: '@search', // Usable in urls
+    token: "@search", // Usable in urls
     tokenizer: /\s+/g
   },
   sorting: {
-    by: Settings.get ( 'sorting.by' ),
-    type: Settings.get ( 'sorting.type' )
+    by: Settings.get("sorting.by"),
+    type: Settings.get("sorting.type")
   },
   katex: {
     throwOnError: true,
     displayMode: false,
-    errorColor: '#F44336'
+    errorColor: "#F44336"
   },
-  mermaid: { //URL: https://github.com/knsv/mermaid/blob/7d3578b31aeea3bc9bbc618dcda57d82574eaffb/src/mermaidAPI.js#L51
+  mermaid: {
+    //URL: https://github.com/knsv/mermaid/blob/7d3578b31aeea3bc9bbc618dcda57d82574eaffb/src/mermaidAPI.js#L51
     gantt: {
       barHeight: 25,
       fontSize: 14
